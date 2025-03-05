@@ -8,6 +8,7 @@ import requests
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
 
+
 # Obtener configuración de las variables de entorno
 use_testnet = os.getenv('USE_TESTNET') == 'True'
 if use_testnet:
