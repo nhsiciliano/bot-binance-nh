@@ -10,3 +10,4 @@ google-cloud-secret-manager==2.15.1
 psutil==5.9.5
 schedule==1.2.1
 ntplib==0.4.0
+python-binance==1.0.19
