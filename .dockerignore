@@ -1,0 +1,57 @@
+# Archivos de entorno y configuración local
+.env
+.env.*
+!.env.sample
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Archivos de logs
+*.log
+logs/
+
+# Directorios de datos y caché
+data/
+.cache/
+.pytest_cache/
+
+# Archivos de base de datos local
+*.db
+*.sqlite
+
+# Directorios y archivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Archivos de git
+.git
+.gitignore
+
+# Otros archivos que no se necesitan en la imagen
+README.md
+LICENSE
+tests/
+docs/
+screenshots/

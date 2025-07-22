@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: binance-trading-bot
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHON_UNBUFFERED
+        value: 1
+    # Variables de entorno secretas (se configurarán en la interfaz web)
+    # API_KEY, API_SECRET, SUPABASE_URL, SUPABASE_KEY, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
