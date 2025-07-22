@@ -453,9 +453,9 @@ class TechnicalAnalyzer:
 
             # 2. Cálculo de Indicadores
             df = df_ohlcv.copy()
-            df.columns = ['timestamp', 'open', 'high', 'low', 'close', 'volume']
-            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
-            df.set_index('timestamp', inplace=True)
+            # df_ohlcv ya tiene timestamp como índice y 5 columnas: open, high, low, close, volume
+            # No necesitamos reasignar columnas ni convertir timestamp ya que viene procesado de binance_utils
+            logging.debug(f"DataFrame shape: {df.shape}, columns: {df.columns.tolist()}")
 
             # Filtro de Tendencia Principal (EMA 200)
             df['ema_long'] = df['close'].ewm(span=ema_long_period, adjust=False).mean()
