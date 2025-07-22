@@ -4,7 +4,7 @@ Bot automatizado de trading para criptomonedas que utiliza la API de Binance y a
 
 ## Características
 
-- **Timeframe**: Análisis en timeframe de 4 horas (4h)
+- **Timeframe**: Análisis en timeframe de 5 minutos (5m) para scalping
 - **Indicadores**: Utiliza RSI y MACD adaptados para funcionar con datos limitados
 - **Gestión de riesgo**: Stop loss y take profit configurables
 - **Base de datos**: Integración con Supabase para almacenar operaciones y métricas

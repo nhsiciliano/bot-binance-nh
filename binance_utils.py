@@ -115,7 +115,7 @@ def force_time_sync_if_needed(exchange, force=False):
 
 def get_ohlcv(
     symbol: str, 
-    timeframe: str = '4h', 
+    timeframe: str = '5m', 
     limit: int = 100, 
     since: Optional[int] = None,
     testnet: Optional[bool] = None,

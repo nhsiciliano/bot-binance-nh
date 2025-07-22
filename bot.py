@@ -65,7 +65,7 @@ class TradingConfig:
     # Exchange settings
     exchange_id: str = 'binance'
     symbols: List[str] = None
-    timeframe: str = '15m'  # Timeframe base para la estrategia
+    timeframe: str = '5m'  # Timeframe base para la estrategia (scalping)
 
     # --- Parámetros de Estrategia Principal (Tendencia + Oscilador) ---
 
@@ -437,6 +437,7 @@ class TechnicalAnalyzer:
             ema_long_period = getattr(config, 'ema_long_period', 200)
             rsi_period = getattr(config, 'rsi_period', 14)
             rsi_oversold = getattr(config, 'rsi_oversold', 30)
+            rsi_overbought = getattr(config, 'rsi_overbought', 70)
             fast_period = getattr(config, 'macd_fast', 12)
             slow_period = getattr(config, 'macd_slow', 26)
             signal_period = getattr(config, 'macd_signal', 9)
@@ -1322,7 +1323,10 @@ class CryptoTradingBot:
                 logging.error(f"Error al conectar con {self.exchange.name}: {e}")
                 return
             
-            # Iterar sobre todos los símbolos configurados
+            # Inicializar variable signal para evitar errores
+            signal = "Sin señales"
+            
+            # Procesar cada símbolo configurado
             for symbol in self.symbols:
                 logging.info(f"\n=== Procesando par {symbol} en timeframe {self.config.timeframe} ===")
                 
@@ -1538,7 +1542,8 @@ def test_trade():
     # Configuración de prueba con múltiples pares
     config = TradingConfig(
         exchange_id='binance',
-        symbols=['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'XRP/USDT']
+        symbols=['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'XRP/USDT'],
+        timeframe='5m'  # Scalping con timeframe de 5 minutos
     )
     
     # Usar API Keys desde la configuración (entorno o Cloud Secret Manager)
@@ -1657,7 +1662,8 @@ def main():
     try:
         # Configuración del bot con múltiples pares
         config = TradingConfig(
-            symbols=['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'XRP/USDT']
+            symbols=['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'XRP/USDT'],
+            timeframe='5m'  # Scalping con timeframe de 5 minutos
         )
         
         # Usar API Keys configuradas (desde variables de entorno o Secret Manager)
