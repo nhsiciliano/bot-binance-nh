@@ -318,27 +318,8 @@ class NotificationManager:
 class TechnicalAnalysis:
     """Clase para análisis técnico"""
     
-    @staticmethod
-    def calculate_rsi(prices: np.array, period: int = 14) -> np.array:
-        """Calcula RSI usando implementación nativa"""
-        # Crear un DataFrame temporal con los precios
-        df = pd.DataFrame({"close": prices})
-        return calculate_rsi(df, period=period, column="close")
-    
-    @staticmethod
-    def calculate_macd(prices: np.array, fast: int = 12, slow: int = 26, signal: int = 9) -> Tuple[np.array, np.array, np.array]:
-        """Calcula MACD usando implementación nativa"""
-        # Crear un DataFrame temporal con los precios
-        df = pd.DataFrame({"close": prices})
-        return calculate_macd(df, fast_period=fast, slow_period=slow, signal_period=signal, column="close")
-    
-    @staticmethod
-    def calculate_ema(prices: np.array, period: int) -> np.array:
-        """Calcula EMA usando implementación nativa"""
-        # Crear un DataFrame temporal con los precios
-        df = pd.DataFrame({"close": prices})
-        from indicators import calculate_ema
-        return calculate_ema(df, period=period, column="close")
+    # Funciones estáticas eliminadas para evitar referencias circulares
+    # Se usan las funciones de instancia más abajo
     
     @staticmethod
     def is_trading_hours(start_hour: int, end_hour: int) -> bool:
@@ -469,12 +450,27 @@ class TechnicalAnalyzer:
                 df['close'].values, fast=fast_period, slow=slow_period, signal=signal_period
             )
 
+            # Bollinger Bands (para análisis de soporte/resistencia)
+            bb_period = 20
+            bb_std = 2
+            df['bb_middle'] = df['close'].rolling(window=bb_period).mean()
+            bb_std_dev = df['close'].rolling(window=bb_period).std()
+            df['bb_upper'] = df['bb_middle'] + (bb_std_dev * bb_std)
+            df['bb_lower'] = df['bb_middle'] - (bb_std_dev * bb_std)
+            df['bb_width'] = df['bb_upper'] - df['bb_lower']  # Ancho de las bandas
+
             # 3. Extracción de Valores Actuales (última vela cerrada)
             current_close = df['close'].iloc[-1]
             current_ema_long = df['ema_long'].iloc[-1]
             current_rsi = df['rsi'].iloc[-1]
+            current_macd = df['macd'].iloc[-1]
+            current_signal = df['macdsignal'].iloc[-1]
             current_hist = df['macdhist'].iloc[-1]
             previous_hist = df['macdhist'].iloc[-2]
+            current_bb_upper = df['bb_upper'].iloc[-1]
+            current_bb_lower = df['bb_lower'].iloc[-1]
+            current_bb_middle = df['bb_middle'].iloc[-1]
+            current_bb_width = df['bb_width'].iloc[-1]
 
             # 4. Lógica de Señal de Compra
             
@@ -564,35 +560,9 @@ class TechnicalAnalyzer:
                 bb_signal = "no disponible"
                 df['bb_signal'] = 'neutral'
             
-            # Evaluación de niveles Fibonacci
+            # Evaluación de niveles Fibonacci (deshabilitado por ahora)
             fib_signal = "neutral"
-            if fib_levels_close:
-                # Ordenar niveles por cercanía al precio actual
-                closest_levels = sorted(fib_levels_close, key=lambda x: abs(x[1] - current_close))[:3]  # 3 niveles más cercanos
-                
-                for level, price in closest_levels:
-                    # Si el precio está muy cerca de un nivel Fibonacci (dentro del 0.3%)
-                    if abs(price - current_close) / current_close < 0.003:
-                        # Nivel 0 o 1 son extremos (posible reversión)
-                        if level in [0, 1.0]:
-                            if df['fib_trend'].iloc[-1] == 'up' and level == 1.0:
-                                fib_signal = "soporte fuerte"
-                                signal_strength += 0.5
-                                signals.append(f"Soporte Fibonacci fuerte (nivel {level})")
-                            elif df['fib_trend'].iloc[-1] == 'down' and level == 0:
-                                fib_signal = "resistencia fuerte"
-                                signal_strength -= 0.5
-                                signals.append(f"Resistencia Fibonacci fuerte (nivel {level})")
-                        # Niveles intermedios importantes (0.5, 0.618) pueden indicar retrocesos
-                        elif level in [0.5, 0.618]:  
-                            if df['fib_trend'].iloc[-1] == 'up':
-                                fib_signal = "retroceso alcista"
-                                signal_strength += 0.5
-                                signals.append(f"Retroceso Fibonacci clave en tendencia alcista (nivel {level})")
-                            else:
-                                fib_signal = "retroceso bajista"
-                                signal_strength -= 0.5
-                                signals.append(f"Retroceso Fibonacci clave en tendencia bajista (nivel {level})")
+            # TODO: Implementar cálculo de niveles Fibonacci si se requiere
             
             # Combinación de señales para estrategia de scalping
             # Se requiere al menos 2 puntos de fuerza para generar señal
@@ -623,7 +593,7 @@ class TechnicalAnalyzer:
                         'macd_slow': slow_period,
                         'macd_signal': signal_period,
                         'bb_period': bb_period,
-                        'bb_stddev': bb_std_dev,
+                        'bb_stddev': bb_std,
                         'signal_strength': signal_strength,
                         'ema_short_period': ema_short_period,
                         'ema_long_period': ema_long_period
