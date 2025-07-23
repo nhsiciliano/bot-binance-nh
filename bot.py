@@ -88,6 +88,7 @@ class TradingConfig:
     trailing_stop_pct: float = 1.5
     max_position_size: float = 15.0
     max_positions: int = 5
+    max_positions_per_symbol: int = 2  # Máximo 2 posiciones por símbolo
 
     # --- Configuración Adicional ---
     trading_start_hour: int = 0
