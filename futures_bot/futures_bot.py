@@ -104,6 +104,33 @@ class FuturesBot:
             logging.error(f"❌ Error verificando límites de posición: {e}")
             return False
 
+    def _get_symbol_precision(self, symbol: str) -> int:
+        """Obtiene la precisión correcta para la cantidad según el símbolo."""
+        # Precisiones típicas para futuros de Binance
+        precision_map = {
+            'BTCUSDT': 3,   # 0.001
+            'ETHUSDT': 3,   # 0.001  
+            'SOLUSDT': 1,   # 0.1
+            'XRPUSDT': 0,   # 1 (entero)
+        }
+        return precision_map.get(symbol, 2)  # Default 2 decimales
+
+    def _calculate_quantity(self, symbol: str, price: float) -> float:
+        """Calcula la cantidad con la precisión correcta para el símbolo."""
+        raw_quantity = self.config.trade_amount_usd / price
+        precision = self._get_symbol_precision(symbol)
+        
+        # Redondear a la precisión correcta
+        quantity = round(raw_quantity, precision)
+        
+        # Asegurar cantidad mínima
+        min_quantity = 10 ** (-precision) if precision > 0 else 1
+        if quantity < min_quantity:
+            quantity = min_quantity
+            
+        logging.info(f"📊 {symbol}: Cantidad calculada {raw_quantity:.6f} → {quantity} (precisión: {precision})")
+        return quantity
+
     def analyze_market(self):
         """Método principal para analizar el mercado y operar."""
         logging.info(f"🔍 === Iniciando análisis de mercado FUTUROS - {datetime.now().strftime('%H:%M:%S')} ===")
@@ -146,7 +173,7 @@ class FuturesBot:
                 logging.warning(f"🎯 Razón: {details.get('signal_reason', 'N/A')}")
                 
                 # Calcular detalles de la orden
-                quantity = round(self.config.trade_amount_usd / latest_price, 3)
+                quantity = self._calculate_quantity(symbol, latest_price)
                 
                 if signal == 'LONG':
                     side = 'BUY'
