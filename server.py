@@ -400,8 +400,9 @@ def main():
         logging.info("⏳ Esperando 2 segundos antes de iniciar el bot...")
         time.sleep(2)  # Dar tiempo al servidor para estabilizarse
         
-        # Iniciar el bot y el heartbeat en hilos separados
-        bot_thread = start_bot_thread()
+        # Iniciar SOLO el bot de futuros y el heartbeat en hilos separados
+        logging.info("🚀 MODO FUTUROS ÚNICAMENTE - Bot de spot deshabilitado")
+        # bot_thread = start_bot_thread()  # DESHABILITADO - Solo futuros
         futures_bot_thread = start_futures_bot_thread()
         heartbeat_thread = start_heartbeat_thread()
         
